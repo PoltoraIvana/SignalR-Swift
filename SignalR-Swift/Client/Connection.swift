@@ -94,7 +94,9 @@ public class Connection: ConnectionProtocol {
     func negotiate(transport: ClientTransportProtocol) {
         self.connectionData = self.onSending()
 
-        transport.negotiate(connection: self, connectionData: self.connectionData, completionHandler: { [unowned self] (response, error) in
+        transport.negotiate(connection: self, connectionData: self.connectionData, completionHandler: { [weak self] (response, error) in
+            guard let `self` = self else { return }
+
             if let error = error {
                 self.didReceiveError(error: error)
                 self.stopButDoNotCallServer()
