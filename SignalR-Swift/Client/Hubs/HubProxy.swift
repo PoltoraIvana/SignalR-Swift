@@ -57,7 +57,15 @@ public class HubProxy: HubProxyProtocol {
         let callbackId = connection.registerCallback { result in
             guard let hubResult = result else { return }
             hubResult.state?.forEach { (key, value) in self.state[key] = value }
-            completionHandler?(hubResult.result, hubResult.error)
+            
+            var error: Error?
+            if let errorValue = hubResult.error {
+                var userInfo: [String: Any] = [:]
+                userInfo[NSLocalizedFailureReasonErrorKey] = NSExceptionName.internalInconsistencyException
+                userInfo[NSLocalizedDescriptionKey] = errorValue
+                error = NSError(domain: "com.SignalR", code: 0, userInfo: userInfo)
+            }
+            completionHandler?(hubResult.result, error)
         }
 
         let hubData = HubInvocation(callbackId: callbackId,
