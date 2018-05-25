@@ -57,7 +57,7 @@ public class HubProxy: HubProxyProtocol {
         let callbackId = connection.registerCallback { result in
             guard let hubResult = result else { return }
             hubResult.state?.forEach { (key, value) in self.state[key] = value }
-            completionHandler?(hubResult.result, nil)
+            completionHandler?(hubResult.result, hubResult.error)
         }
 
         let hubData = HubInvocation(callbackId: callbackId,
